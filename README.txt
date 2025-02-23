@@ -1,5 +1,5 @@
 Class + Section: CPSC 386 Section 1
-Assignment: Alien Invasion
+Assignment: Space Invaders
 Description:
 
 Notes:

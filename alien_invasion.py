@@ -40,9 +40,11 @@ class AlienInvasion:
         self.event = Event(self)
 
     def game_over(self):
-        # self.restart_game()
-        print("Game over!") 
-        sys.exit()
+        self.restart_game()
+        print("Game over!")
+        self.game_active = False
+        pg.mouse.set_visible(True)
+        #sys.exit()
 
     def reset_game(self):
         self.stats.reset_stats()

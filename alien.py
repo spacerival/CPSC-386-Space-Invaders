@@ -24,7 +24,7 @@ class Alien(Sprite):
         # self.explosion_timer = Timer(images=Alien.alien.explosion_images, start_index=Alien.n % 2,
         #                              loop_continuously=False)
         self.image = self.timer.current_image()
-        print(self.image)
+        # print(self.image)
         self.rect = self.image.get_rect()
 
         self.rect.x = self.rect.width

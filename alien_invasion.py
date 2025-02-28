@@ -10,6 +10,8 @@ from button import Button
 from scoreboard import Scoreboard
 from event import Event
 
+from menu import Menu
+
 
 class AlienInvasion:
     # di = {pg.K_RIGHT: Vector(1, 0), pg.K_LEFT: Vector(-1, 0),
@@ -23,7 +25,7 @@ class AlienInvasion:
         self.screen = pg.display.set_mode(self.settings.w_h)
         self.stats = GameStats(self)
         self.sb = Scoreboard(self)
-
+        self.menu = Menu()
         self.ship = Ship(ai_game=self)
         self.fleet = Fleet(ai_game=self)
         self.ship.set_fleet(self.fleet)
@@ -38,6 +40,8 @@ class AlienInvasion:
 
         self.play_button = Button(self, "Play")
         self.event = Event(self)
+        pg.mixer.music.load("Space Invader Project Game Music.mp3")
+        
 
     def game_over(self):
         self.restart_game()
@@ -65,6 +69,7 @@ class AlienInvasion:
         self.finished = False
         self.first = True
         self.game_active = False
+        pg.mixer.music.play(-1, 0)
         while not self.finished:
             self.finished = self.event.check_events()
             if self.first or self.game_active:
@@ -75,6 +80,7 @@ class AlienInvasion:
                 self.sb.show_score()
 
             if not self.game_active:
+                self.menu.display_menu()
                 self.play_button.draw_button()
             pg.display.flip()
 

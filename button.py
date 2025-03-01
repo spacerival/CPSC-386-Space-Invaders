@@ -1,17 +1,19 @@
 import pygame.font
+from colors import GREEN, DARK_GREEN, BLUE
 
 class Button:
-    def __init__(self, ai_game, msg):
+    def __init__(self, ai_game, msg, colors=DARK_GREEN, offset=0):
         self.screen = ai_game.screen
         self.screen_rect = self.screen.get_rect()
 
         self.width, self.height = 200, 50
-        self.button_color = (0, 135, 0)
+        self.button_color = colors
         self.text_color = (255, 255, 255)
         self.font = pygame.font.SysFont(None, 48)
 
         self.rect = pygame.Rect(0, 0, self.width, self.height)
-        self.rect.center = self.screen_rect.center
+        self.rect.centerx = self.screen_rect.centerx
+        self.rect.centery = self.screen_rect.centery + offset
 
         self._prep_msg(msg)
 

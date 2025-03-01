@@ -1,6 +1,6 @@
 import sys
 import pygame as pg
-from colors import OFF_WHITE, DARK_GREY
+from colors import OFF_WHITE, DARK_GREY, BLUE
 from settings import Settings
 from ship import Ship
 from vector import Vector
@@ -11,6 +11,7 @@ from scoreboard import Scoreboard
 from event import Event
 
 from menu import Menu
+from pathlib import Path
 
 
 class AlienInvasion:
@@ -20,6 +21,7 @@ class AlienInvasion:
     #       pg.K_w: Vector(0, -1), pg.K_s: Vector(0, 1)}
     def __init__(self):
         pg.init()   
+        self.path = Path("high_score.txt")
         self.clock = pg.time.Clock()
         self.settings = Settings()
         self.screen = pg.display.set_mode(self.settings.w_h)
@@ -39,18 +41,24 @@ class AlienInvasion:
         self.first = True
 
         self.play_button = Button(self, "Play")
+        self.high_score_button = Button(self, "High Scores", BLUE, 75)
         self.event = Event(self)
-        pg.mixer.music.load("Space Invader Project Game Music.mp3")
+        pg.mixer.music.load("Space Invader Project Menu Theme.mp3")
+        pg.mixer.music.set_volume(0.3)
         
 
     def game_over(self):
         self.restart_game()
+        print(f"{self.stats.high_score}\n")
+        self.path.write_text(f"{self.stats.high_score}")
         print("Game over!")
         self.game_active = False
         pg.mouse.set_visible(True)
+        self.settings.play_menu_theme()
         #sys.exit()
 
     def reset_game(self):
+        self.settings.play_game_music()
         self.stats.reset_stats()
         self.sb.prep_score_level_ships()
         self.game_active = True
@@ -82,6 +90,7 @@ class AlienInvasion:
             if not self.game_active:
                 self.menu.display_menu()
                 self.play_button.draw_button()
+                self.high_score_button.draw_button()
             pg.display.flip()
 
             self.clock.tick(60)

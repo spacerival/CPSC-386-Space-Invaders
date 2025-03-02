@@ -66,6 +66,7 @@ class Fleet(Sprite):
         if collisions:
             for aliens in collisions.values():
                 self.stats.score += self.settings.alien_points * len(aliens)
+                self.settings.alien_speed *= 1.02
             self.sb.prep_score()
             self.sb.check_high_score()
 
@@ -73,6 +74,7 @@ class Fleet(Sprite):
             self.ship.lasers.empty()
             self.create_fleet()
                     # Increase level.
+            self.settings.alien_speed = self.settings.alien_base_speed
             self.stats.level += 1
             self.sb.prep_level()
             return

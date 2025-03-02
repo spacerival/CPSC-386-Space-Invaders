@@ -7,10 +7,10 @@ from pathlib import Path
 class GameStats:
     def __init__(self, ai_game):
         self.path = ai_game.path
-        points = self.path.read_text()
+        self.points = self.path.read_text().splitlines()
         self.settings = ai_game.settings
         self.reset_stats()
-        self.high_score = int(points)
+        self.high_score = int(self.points[0])
 
     def reset_stats(self):
         self.ships_left = self.settings.ship_limit

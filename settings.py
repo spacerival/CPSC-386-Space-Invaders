@@ -25,7 +25,8 @@ class Settings:
     def initialize_dynamic_settings(self):
         self.ship_speed = 10.0
         self.laser_speed = 2.5
-        self.alien_speed = 1.0
+        self.alien_base_speed = 1.0
+        self.alien_speed = self.alien_base_speed
 
         self.alien_points = 50
 
@@ -33,7 +34,7 @@ class Settings:
         """Increase speed settings and alien point values."""
         self.ship_speed *= self.speedup_scale
         self.laser_speed *= self.speedup_scale
-        self.alien_speed *= self.speedup_scale
+        self.alien_base_speed *= self.speedup_scale
 
         self.alien_points = int(self.alien_points * self.score_scale)
 

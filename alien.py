@@ -16,6 +16,7 @@ class Alien(Sprite):
     def __init__(self, ai_game, v): 
         super().__init__()
         self.ai_game = ai_game
+        self.settings = ai_game.settings
         self.screen = ai_game.screen
         self.v = v
 
@@ -24,7 +25,7 @@ class Alien(Sprite):
         # self.explosion_timer = Timer(images=Alien.alien.explosion_images, start_index=Alien.n % 2,
         #                              loop_continuously=False)
         self.image = self.timer.current_image()
-        # print(self.image)
+        #print(self.image)
         self.rect = self.image.get_rect()
 
         self.rect.x = self.rect.width
@@ -41,7 +42,7 @@ class Alien(Sprite):
         return self.x + self.rect.width >= sr.right or self.x <= 0
 
     def update(self):
-        self.x += self.v.x
+        self.x += self.v.x * self.settings.alien_speed
         self.y += self.v.y
         self.image = self.timer.current_image()
         self.draw()
@@ -57,7 +58,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-
 

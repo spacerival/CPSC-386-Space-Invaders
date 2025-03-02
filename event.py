@@ -1,6 +1,7 @@
 import pygame as pg
 import sys 
 from vector import Vector 
+from menu import Menu
 
 class Event:
     di = {pg.K_RIGHT: Vector(1, 0), pg.K_LEFT: Vector(-1, 0),
@@ -13,9 +14,12 @@ class Event:
         self.settings = ai_game.settings
         self.stats = ai_game.stats
         self.sb = ai_game.sb 
+        self.menu = ai_game.menu
         self.game_active = ai_game.game_active
         self.ship = ai_game.ship
         self.play_button = ai_game.play_button
+        self.score_button = ai_game.high_score_button
+        self.back_button = ai_game.back_button
 
     def check_events(self):
         for event in pg.event.get():
@@ -29,13 +33,31 @@ class Event:
             elif event.type == pg.MOUSEBUTTONDOWN:
                 mouse_pos = pg.mouse.get_pos()
                 self._check_play_button(mouse_pos)
+                self.check_score_button(mouse_pos)
+                self.check_back_button(mouse_pos)
+            
 
     def _check_play_button(self, mouse_pos):
         button_clicked = self.play_button.rect.collidepoint(mouse_pos)
         if button_clicked and not self.game_active:
-            self.settings.initialize_dynamic_settings()
             self.ai_game.reset_game()
+            self.settings.initialize_dynamic_settings()
+    
 
+    def check_score_button(self, mouse_pos):
+        button_clicked = self.score_button.rect.collidepoint(mouse_pos)
+        if button_clicked and not self.game_active:
+            self.menu.display_high_scores()
+            print("High Score Button Clicked")  # Testing purposes
+            self.ai_game.menu_toggle = False
+    
+
+    def check_back_button(self, mouse_pos):
+        button_clicked = self.back_button.rect.collidepoint(mouse_pos)
+        if button_clicked and not self.game_active:
+            print("Back Button Clicked")    # Testing Purposes
+            self.ai_game.menu_toggle = True
+            
     def _check_keydown_events(self, event):
         key = event.key
         if key in Event.di.keys():
@@ -55,3 +77,4 @@ class Event:
             self.ship.cease_fire()
 
  
+

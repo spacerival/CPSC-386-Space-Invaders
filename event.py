@@ -39,14 +39,14 @@ class Event:
 
     def _check_play_button(self, mouse_pos):
         button_clicked = self.play_button.rect.collidepoint(mouse_pos)
-        if button_clicked and not self.game_active:
+        if button_clicked and not self.game_active and self.ai_game.menu_toggle:
             self.ai_game.reset_game()
             self.settings.initialize_dynamic_settings()
     
 
     def check_score_button(self, mouse_pos):
         button_clicked = self.score_button.rect.collidepoint(mouse_pos)
-        if button_clicked and not self.game_active:
+        if button_clicked and not self.game_active and self.ai_game.menu_toggle:
             self.menu.display_high_scores()
             print("High Score Button Clicked")  # Testing purposes
             self.ai_game.menu_toggle = False
@@ -77,4 +77,3 @@ class Event:
             self.ship.cease_fire()
 
  
-

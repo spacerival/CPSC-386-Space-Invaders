@@ -5,6 +5,7 @@ from laser import Laser
 
 from alien import Alien
 from pygame.sprite import Sprite
+from random import randint
 
 class Fleet(Sprite):
     def __init__(self, ai_game): 
@@ -12,6 +13,7 @@ class Fleet(Sprite):
         self.screen = ai_game.screen
         self.ship = ai_game.ship
         self.aliens = pg.sprite.Group()
+        self.lasers = pg.sprite.Group()
         self.settings = ai_game.settings
         self.stats = ai_game.stats
         self.sb = ai_game.sb
@@ -60,8 +62,15 @@ class Fleet(Sprite):
                 return True
         return False
 
+
+    def fire_laser(self, rect):
+        laser = Laser(self.ai_game, True, rect)
+        self.lasers.add(laser) 
+    
+
     def update(self): 
         collisions = pg.sprite.groupcollide(self.ship.lasers, self.aliens, True, True)
+        pg.sprite.groupcollide(self.ship.lasers, self.lasers, True, True)
 
         if collisions:
             for aliens in collisions.values():
@@ -75,12 +84,14 @@ class Fleet(Sprite):
             self.create_fleet()
                     # Increase level.
             self.settings.alien_speed = self.settings.alien_base_speed
+            pg.mixer.music.rewind()
             self.stats.level += 1
             self.sb.prep_level()
             return
-        if pg.sprite.spritecollideany(self.ship, self.aliens):
+        if pg.sprite.spritecollideany(self.ship, self.aliens) or pg.sprite.spritecollideany(self.ship, self.lasers):
             print("Ship hit!")
             self.ship.ship_hit()
+            self.lasers.empty()
             return
         
         if self.check_bottom():
@@ -94,6 +105,18 @@ class Fleet(Sprite):
             
         for alien in self.aliens:
             alien.update()
+            if randint(1, 1500) == 5:
+                self.fire_laser(alien.rect.midtop)
+        
+        count = 0
+        while count < 13:
+            self.lasers.update(-0.1)
+            for laser in self.lasers.copy():
+                if laser.rect.bottom >= self.settings.scr_height:
+                    self.lasers.remove(laser)
+            for laser in self.lasers.sprites():
+                laser.draw()  
+            count += 1  
 
     def draw(self): pass
         # for alien in self.aliens:

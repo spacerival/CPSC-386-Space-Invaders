@@ -2,7 +2,7 @@ import pygame.font
 from colors import GREEN, DARK_GREEN, BLUE
 
 class Button:
-    def __init__(self, ai_game, msg, colors=DARK_GREEN, offset=0):
+    def __init__(self, ai_game, msg, offset=0, colors=DARK_GREEN):
         self.screen = ai_game.screen
         self.screen_rect = self.screen.get_rect()
 

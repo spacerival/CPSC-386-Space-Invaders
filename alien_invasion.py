@@ -40,9 +40,9 @@ class AlienInvasion:
         self.first = True
         self.menu_toggle = True
 
-        self.play_button = Button(self, "Play")
-        self.high_score_button = Button(self, "High Scores", BLUE, 75)
-        self.back_button = Button(self, "Back",BLUE, 350)
+        self.play_button = Button(self, "Play", 175)
+        self.high_score_button = Button(self, "High Scores", 250, BLUE)
+        self.back_button = Button(self, "Back", 350, BLUE)
         self.event = Event(self)
         pg.mixer.music.load("Space Invader Project Menu Theme.mp3")
         pg.mixer.music.set_volume(0.3)

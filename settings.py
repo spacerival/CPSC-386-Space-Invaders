@@ -1,11 +1,11 @@
 import pygame as pg
-from colors import DARK_GREY, RED
+from colors import DARK_GREY, RED, BLACK
 
 class Settings:
     def __init__(self):
         self.scr_width = 1200
         self.scr_height = 800
-        self.bg_color = DARK_GREY
+        self.bg_color = BLACK
         self.w_h = (self.scr_width, self.scr_height)
 
         # laser settings
@@ -28,7 +28,11 @@ class Settings:
         self.alien_base_speed = 1.0
         self.alien_speed = self.alien_base_speed
 
-        self.alien_points = 50
+        self.alien_points = 50 # will remove later to account for different alien types/points
+        self.pink_alien_pts = 100
+        self.blue_alien_pts = 200
+        self.green_alien_pts = 300
+        self.ufo_pts = 500
 
     def increase_speed(self):
         """Increase speed settings and alien point values."""

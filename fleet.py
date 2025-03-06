@@ -32,16 +32,20 @@ class Fleet(Sprite):
         alien = Alien(ai_game=self.ai_game, v=self.v)
         alien_height = alien.rect.height
         current_y = alien_height
+        type = 2
         while current_y < (self.settings.scr_height - self.spacing * 6 * alien_height):
-            self.create_row(current_y)
+            if type == -1:
+                type = 0
+            self.create_row(current_y, type)
             current_y += self.spacing * alien_height
+            type -= 1
         
-    def create_row(self, y):
-        alien = Alien(ai_game=self.ai_game, v=self.v)
+    def create_row(self, y, type):
+        alien = Alien(ai_game=self.ai_game, v=self.v, type=type)
         alien_width = alien.rect.width
         current_x = alien_width 
         while current_x < (self.settings.scr_width - self.spacing * alien_width):
-             new_alien = Alien(self, v=self.v)
+             new_alien = Alien(self, v=self.v, type=type)
              new_alien.rect.y = y
              new_alien.y = y
              new_alien.x = current_x
@@ -75,7 +79,7 @@ class Fleet(Sprite):
         if collisions:
             for aliens in collisions.values():
                 self.stats.score += self.settings.alien_points * len(aliens)
-                self.settings.alien_speed *= 1.02
+                self.settings.alien_speed *= 1.03
             self.sb.prep_score()
             self.sb.check_high_score()
 
@@ -105,8 +109,9 @@ class Fleet(Sprite):
             
         for alien in self.aliens:
             alien.update()
-            if randint(1, 1500) == 5:
-                self.fire_laser(alien.rect.midtop)
+            if pg.time.get_ticks() % randint(500, 650) == 0:
+                if randint(1, 25) == 1:                 
+                    self.fire_laser(alien.rect.midtop)
         
         count = 0
         while count < 13:

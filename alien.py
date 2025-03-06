@@ -7,21 +7,30 @@ from timer import Timer
 from random import randint
 
 class Alien(Sprite):
+    """example: "animation/pinkAlien_rd-{n}.png"  """
     alien_images0 = [pg.image.load(f"images/alien0{n}.png") for n in range(2)]
     alien_images1 = [pg.image.load(f"images/alien1{n}.png") for n in range(2)]
     alien_images2 = [pg.image.load(f"images/alien2{n}.png") for n in range(2)]
     alien_images = [alien_images0, alien_images1, alien_images2]
     # alien_explosion_images = []  # fill in explosion images here
 
-    def __init__(self, ai_game, v): 
+    alien0 = {"type": "pink", "points": 100, "type_value": 0}
+    alien1 = {"type": "blue", "points": 200, "type_value": 1}
+    alien2 = {"type": "green", "points": 300, "type_value": 2}
+    alien3 = {"type": "ufo", "points": 500, "type_value": 3}
+    alien_types = [alien0, alien1, alien2, alien3]
+    
+
+    def __init__(self, ai_game, v, type=0): 
         super().__init__()
         self.ai_game = ai_game
         self.settings = ai_game.settings
         self.screen = ai_game.screen
         self.v = v
 
-        type = randint(0, 2)
-        self.timer = Timer(images=Alien.alien_images[type], delta=type*350, start_index=type % 2)
+        #type = randint(0, 2)
+        self.type = type
+        self.timer = Timer(images=Alien.alien_images[self.type], delta=self.type*350, start_index=self.type % 2)
         # self.explosion_timer = Timer(images=Alien.alien.explosion_images, start_index=Alien.n % 2,
         #                              loop_continuously=False)
         self.image = self.timer.current_image()
@@ -40,6 +49,11 @@ class Alien(Sprite):
         self.rect.y = self.y
         r = self.rect 
         return self.x + self.rect.width >= sr.right or self.x <= 0
+    
+    def check_type(self):
+        """Checks the type of alien and returns 
+            the appropriate point value. """
+        print("placeholder")
 
     def update(self):
         self.x += self.v.x * self.settings.alien_speed
@@ -58,4 +72,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
 

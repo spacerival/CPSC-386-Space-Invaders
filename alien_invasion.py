@@ -50,7 +50,7 @@ class AlienInvasion:
 
     def game_over(self):
         self.restart_game()
-        print(f"{self.stats.high_score}\n")     # Testing purposes
+        print(f"High Score: {self.stats.high_score}\n")     # Testing purposes
         print("Game over!")
         self.game_active = False
         self.menu_toggle = True
@@ -70,7 +70,7 @@ class AlienInvasion:
     def restart_game(self):
         self.game_active = False
         self.first = True
-        self.play_button.reset_message("Play again? (q for quit)")
+        self.play_button.reset_message("Play again?")
         self.menu.update_score_list(self.stats.score)
         self.reset_game()
 
@@ -91,7 +91,7 @@ class AlienInvasion:
 
             if not self.game_active:
                 if self.menu_toggle == True:
-                    self.menu.display_menu()
+                    self.menu.display_start_menu()
                     self.play_button.draw_button()
                     self.high_score_button.draw_button()
                 else:

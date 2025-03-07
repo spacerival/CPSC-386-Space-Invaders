@@ -19,6 +19,7 @@ class Fleet(Sprite):
         self.stats = ai_game.stats
         self.sb = ai_game.sb
         self.v = Vector(self.settings.alien_speed, 0)
+        self.v_ufo = Vector(self.settings.alien_speed, 0)
         # alien = Alien(ai_game=ai_game)
         # self.aliens.add(alien)
         self.spacing = 1.2
@@ -29,6 +30,7 @@ class Fleet(Sprite):
 
     def reset_fleet(self):
         self.aliens.empty()
+        self.ufo.empty()
         self.create_fleet()
 
 
@@ -60,8 +62,10 @@ class Fleet(Sprite):
 
     
     def spawn_ufo(self):
-        alien = Alien(self.ai_game, self.v, 2)
-        print(alien.check_pts)
+        alien = Alien(self.ai_game, self.v_ufo, 3)
+        x, y = alien.rect.width, alien.rect.height
+        alien.x, alien.rect.x = x, x
+        alien.y, alien.rect.y = y, y
         self.ufo.add(alien)
         print("UFO SPAWNED")
         self.ufo_on = True
@@ -73,11 +77,26 @@ class Fleet(Sprite):
             if alien.check_edges(): 
                 return True 
         return False
+
+
+    def check_ufo_edges(self):
+        for ufo in self.ufo:
+            if ufo.check_edges():
+                return True
+        return False
     
     
     def check_bottom(self):
         for alien in self.aliens:
             if alien.rect.bottom >= self.settings.scr_height:
+                self.ship.ship_hit()
+                return True
+        return False
+
+
+    def check_ufo_bottom(self):
+        for ufo in self.ufo:
+            if ufo.rect.bottom >= self.settings.scr_height:
                 self.ship.ship_hit()
                 return True
         return False
@@ -98,6 +117,7 @@ class Fleet(Sprite):
             for laser in self.lasers.sprites():
                 laser.draw()  
             count += 1  
+
 
     def update(self): 
         alien_defeated = pg.sprite.groupcollide(self.ship.lasers, self.aliens, True, True)
@@ -121,7 +141,7 @@ class Fleet(Sprite):
             self.sb.prep_score()
             self.sb.check_high_score()
 
-        if not self.aliens:
+        if not self.aliens and not self.ufo:
             self.ship.lasers.empty()
             self.create_fleet()
                     # Increase level.
@@ -138,7 +158,7 @@ class Fleet(Sprite):
             self.lasers.empty()
             return
         
-        if self.check_bottom():
+        if self.check_bottom() or self.check_ufo_bottom():
             self.settings.alien_speed = self.settings.alien_base_speed
             return 
         
@@ -147,13 +167,17 @@ class Fleet(Sprite):
             for alien in self.aliens:
                 alien.v.x = self.v.x
                 alien.y += self.settings.fleet_drop_speed
-    
+
+        if self.check_ufo_edges():
+            self.v_ufo.x *= -1 
+            for ufo in self.ufo:
+                ufo.v.x = self.v_ufo.x
+                ufo.y += self.settings.fleet_drop_speed
         
         if pg.time.get_ticks() % randint(600, 700) == 0 and self.ufo_level != self.stats.level:
             if self.ufo_on == False:
                 self.spawn_ufo()
 
-            
         for alien in self.aliens:
             alien.update()
             if pg.time.get_ticks() % randint(500, 675) == 0:

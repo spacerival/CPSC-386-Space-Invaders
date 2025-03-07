@@ -7,6 +7,7 @@ from timer import Timer
 from random import randint
 
 class Alien(Sprite):
+
     """example: "animation/pinkAlien_rd-{n}.png"  """
     alien_images0 = [pg.image.load(f"images/alien0{n}.png") for n in range(2)]
     alien_images1 = [pg.image.load(f"images/alien1{n}.png") for n in range(2)]
@@ -42,6 +43,7 @@ class Alien(Sprite):
         
         self.x = float(self.rect.x)
         self.y = float(self.rect.y)
+        
 
     def check_edges(self):
         sr = self.screen.get_rect()
@@ -50,10 +52,14 @@ class Alien(Sprite):
         r = self.rect 
         return self.x + self.rect.width >= sr.right or self.x <= 0
     
-    def check_type(self):
+    
+    def check_pts(self):
         """Checks the type of alien and returns 
             the appropriate point value. """
-        print("placeholder")
+        for alien in Alien.alien_types:
+            if alien["type_value"] == self.type:
+                return alien["points"]
+    
 
     def update(self):
         self.x += self.v.x * self.settings.alien_speed
@@ -65,13 +71,11 @@ class Alien(Sprite):
         self.rect.x = self.x
         self.rect.y = self.y
         self.screen.blit(self.image, self.rect)
-
+    
 
 def main():
     print('\n run from alien_invasions.py\n')
 
 if __name__ == "__main__":
     main()
-
-
 

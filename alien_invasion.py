@@ -1,83 +1,110 @@
+import sys
 import pygame as pg
+from colors import OFF_WHITE, DARK_GREY, BLUE
+from settings import Settings
+from ship import Ship
 from vector import Vector
-from point import Point
-from laser import Laser 
-from pygame.sprite import Sprite
-from timer import Timer
-from random import randint
+from fleet import Fleet
+from game_stats import GameStats
+from button import Button
+from scoreboard import Scoreboard
+from event import Event
+from menu import Menu
+from pathlib import Path
 
-class Alien(Sprite):
 
-    """example: "animation/pinkAlien_rd-{n}.png"  """
-    alien_images0 = [pg.image.load(f"images/alien0{n}.png") for n in range(2)]
-    alien_images1 = [pg.image.load(f"images/alien1{n}.png") for n in range(2)]
-    alien_images2 = [pg.image.load(f"images/alien2{n}.png") for n in range(2)]
-    alien_images = [alien_images0, alien_images1, alien_images2]
-    # alien_explosion_images = []  # fill in explosion images here
+class AlienInvasion:
+    # di = {pg.K_RIGHT: Vector(1, 0), pg.K_LEFT: Vector(-1, 0),
+    #       pg.K_UP: Vector(0, -1), pg.K_DOWN: Vector(0, 1),
+    #       pg.K_d: Vector(1, 0), pg.K_a: Vector(-1, 0),
+    #       pg.K_w: Vector(0, -1), pg.K_s: Vector(0, 1)}
+    def __init__(self):
+        pg.init()   
+        self.path = Path("high_score.txt")
+        self.clock = pg.time.Clock()
+        self.settings = Settings()
+        self.screen = pg.display.set_mode(self.settings.w_h)
+        self.stats = GameStats(self)
+        self.sb = Scoreboard(self)
+        self.menu = Menu(self)
+        self.ship = Ship(ai_game=self)
+        self.fleet = Fleet(ai_game=self)
+        self.ship.set_fleet(self.fleet)
+        self.ship.set_sb(self.sb)
 
-    alien0 = {"type": "pink", "points": 100, "type_value": 0}
-    alien1 = {"type": "blue", "points": 200, "type_value": 1}
-    alien2 = {"type": "green", "points": 300, "type_value": 2}
-    alien3 = {"type": "ufo", "points": 500, "type_value": 3}
-    alien_types = [alien0, alien1, alien2, alien3]
+        pg.display.set_caption("Alien Invasion")
+        self.bg_color = self.settings.bg_color
+
+        # Start Alien Invasion in an inactive state.           
+        self.game_active = False
+        self.first = True
+        self.menu_toggle = True
+
+        self.play_button = Button(self, "Play", 175)
+        self.high_score_button = Button(self, "High Scores", 250, BLUE)
+        self.back_button = Button(self, "Back", 350, BLUE)
+        self.event = Event(self)
+        pg.mixer.music.load("Space Invaders Audio/Space Invader Project Menu Theme.mp3")
+        pg.mixer.music.set_volume(0.3)
+
+
+    def game_over(self):
+        self.restart_game()
+        print(f"High Score: {self.stats.high_score}\n")     # Testing purposes
+        print("Game over!")
+        self.game_active = False
+        self.menu_toggle = True
+        pg.mouse.set_visible(True)
+        self.settings.play_menu_theme()
     
 
-    def __init__(self, ai_game, v, type=0): 
-        super().__init__()
-        self.ai_game = ai_game
-        self.settings = ai_game.settings
-        self.screen = ai_game.screen
-        self.v = v
+    def reset_game(self):
+        self.settings.play_game_music()
+        self.stats.reset_stats()
+        self.sb.prep_score_level_ships()
+        self.game_active = True
+        self.ship.reset_ship()
+        self.fleet.reset_fleet()
+        pg.mouse.set_visible(False)
 
-        #type = randint(0, 2)
-        self.type = type
-        self.timer = Timer(images=Alien.alien_images[self.type], delta=self.type*350, start_index=self.type % 2)
-        # self.explosion_timer = Timer(images=Alien.alien.explosion_images, start_index=Alien.n % 2,
-        #                              loop_continuously=False)
-        self.image = self.timer.current_image()
-        #print(self.image)
-        self.rect = self.image.get_rect()
-
-        self.rect.x = self.rect.width
-        self.rect.y = self.rect.height
-        
-        self.x = float(self.rect.x)
-        self.y = float(self.rect.y)
-        
-
-    def check_edges(self):
-        sr = self.screen.get_rect()
-        self.rect.x = self.x
-        self.rect.y = self.y
-        r = self.rect 
-        return self.x + self.rect.width >= sr.right or self.x <= 0
-    
-    
-    def check_pts(self):
-        """Checks the type of alien and returns 
-            the appropriate point value. """
-        for alien in Alien.alien_types:
-            if alien["type_value"] == self.type:
-                return alien["points"]
-    
-
-    def update(self):
-        self.x += self.v.x * self.settings.alien_speed
-        self.y += self.v.y
-        self.image = self.timer.current_image()
-        self.draw()
-
-    def draw(self): 
-        self.rect.x = self.x
-        self.rect.y = self.y
-        self.screen.blit(self.image, self.rect)
-    
-
-def main():
-    print('\n run from alien_invasions.py\n')
-
-if __name__ == "__main__":
-    main()
+    def restart_game(self):
+        self.game_active = False
+        self.first = True
+        self.play_button.reset_message("Play again?")
+        self.menu.update_score_list(self.stats.score)
+        self.reset_game()
 
 
+    def run_game(self):
+        self.finished = False
+        self.first = True
+        self.game_active = False
+        pg.mixer.music.play(-1, 0)
+        while not self.finished:
+            self.finished = self.event.check_events()
+            if self.first or self.game_active:
+                self.first = False
+                self.screen.fill(self.bg_color)
+                self.ship.update()
+                self.fleet.update()
+                self.sb.show_score()
 
+            if not self.game_active:
+                if self.menu_toggle == True:
+                    self.menu.display_start_menu()
+                    self.play_button.draw_button()
+                    self.high_score_button.draw_button()
+                else:
+                    self.menu.display_high_scores()
+                    self.back_button.draw_button()
+                
+            pg.display.flip()
+
+            self.clock.tick(60)
+        sys.exit()
+
+      
+
+if __name__ == '__main__':
+    ai = AlienInvasion()
+    ai.run_game()

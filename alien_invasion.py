@@ -35,7 +35,7 @@ class AlienInvasion:
         pg.display.set_caption("Alien Invasion")
         self.bg_color = self.settings.bg_color
 
-        # Start Alien Invasion in an inactive state.
+        # Start Alien Invasion in an inactive state.           
         self.game_active = False
         self.first = True
         self.menu_toggle = True
@@ -44,7 +44,7 @@ class AlienInvasion:
         self.high_score_button = Button(self, "High Scores", 250, BLUE)
         self.back_button = Button(self, "Back", 350, BLUE)
         self.event = Event(self)
-        pg.mixer.music.load("Space Invader Project Menu Theme.mp3")
+        pg.mixer.music.load("Space Invaders Audio/Space Invader Project Menu Theme.mp3")
         pg.mixer.music.set_volume(0.3)
 
 

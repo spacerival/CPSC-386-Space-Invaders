@@ -9,11 +9,13 @@ from random import randint
 class Alien(Sprite):
 
     """example: "animation/pinkAlien_rd-{n}.png"  """
-    alien_images0 = [pg.image.load(f"images/alien0{n}.png") for n in range(2)]
-    alien_images1 = [pg.image.load(f"images/alien1{n}.png") for n in range(2)]
-    alien_images2 = [pg.image.load(f"images/alien2{n}.png") for n in range(2)]
-    alien_images = [alien_images0, alien_images1, alien_images2]
-    # alien_explosion_images = []  # fill in explosion images here
+    alien_images0 = [pg.image.load(f"animation/pinkAlien_rd-{n+1}.png.png") for n in range(2)]
+    alien_images1 = [pg.image.load(f"animation/blueAlien_rd-{n+1}.png.png") for n in range(2)]
+    alien_images2 = [pg.image.load(f"animation/greenAlien_rd-{n+1}.png.png") for n in range(2)]
+    alien_images3 = [pg.image.load(f"animation/alienShip_rd-{n+1}.png.png") for n in range(2)]
+    alien_images = [alien_images0, alien_images1, alien_images2, alien_images3]
+    alien_explosion_images = [pg.image.load(f"animation/explosion_rd-{n+1}.png.png") for n in range(3)]  # fill in explosion images here
+    ship_explosion_images = [pg.image.load(f"animation/ship_explosion-{n+1}.png.png") for n in range(9)]
 
     alien0 = {"type": "pink", "points": 100, "type_value": 0}
     alien1 = {"type": "blue", "points": 200, "type_value": 1}
@@ -28,12 +30,14 @@ class Alien(Sprite):
         self.settings = ai_game.settings
         self.screen = ai_game.screen
         self.v = v
+        self.is_dying = False
+        self.is_dead = False
 
         #type = randint(0, 2)
         self.type = type
         self.timer = Timer(images=Alien.alien_images[self.type], delta=self.type*350, start_index=self.type % 2)
-        # self.explosion_timer = Timer(images=Alien.alien.explosion_images, start_index=Alien.n % 2,
-        #                              loop_continuously=False)
+        self.explosion_timer = Timer(images=Alien.alien_explosion_images, loop_continuously=False, running = False)
+        self.ship_explosion_timer = Timer(images=Alien.ship_explosion_images, loop_continuously=False, running = False)
         self.image = self.timer.current_image()
         #print(self.image)
         self.rect = self.image.get_rect()
@@ -43,6 +47,14 @@ class Alien(Sprite):
         
         self.x = float(self.rect.x)
         self.y = float(self.rect.y)
+
+
+    def hit(self):
+        if not self.is_dying:
+            print('ALIEN HIT! Alien is dying')
+            self.is_dying = True
+            self.timer = self.explosion_timer
+            self.timer.start()
         
 
     def check_edges(self):
@@ -62,7 +74,15 @@ class Alien(Sprite):
     
 
     def update(self):
-        self.x += self.v.x * self.settings.alien_speed
+        if self.is_dead: return
+        if self.is_dying and self.explosion_timer.finished():
+            self.is_dying = False
+            self.is_dead = True
+            print('Alien is dead')
+            self.kill()
+            return
+
+        self.x += self.v.x 
         self.y += self.v.y
         self.image = self.timer.current_image()
         self.draw()
@@ -78,4 +98,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

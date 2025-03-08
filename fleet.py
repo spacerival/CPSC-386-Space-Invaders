@@ -120,12 +120,24 @@ class Fleet(Sprite):
 
 
     def update(self): 
+        collisions = pg.sprite.groupcollide(self.ship.lasers, self.aliens, True, False)
+
         alien_defeated = pg.sprite.groupcollide(self.ship.lasers, self.aliens, True, True)
         ufo_defeated = pg.sprite.groupcollide(self.ship.lasers, self.ufo, True, True)
         ship_alien_hit = pg.sprite.spritecollideany(self.ship, self.aliens)
         ship_alien_laser_hit =  pg.sprite.spritecollideany(self.ship, self.lasers)
         ship_ufo_hit = pg.sprite.spritecollideany(self.ship, self.ufo)
         pg.sprite.groupcollide(self.ship.lasers, self.lasers, True, True)
+
+        if collisions:
+            for aliens in collisions.values():
+                self.stats.score += self.settings.alien_points * len(aliens)
+                for alien in aliens:
+                    alien.hit()
+                
+            self.sb.prep_score()
+            self.sb.check_high_score()
+
 
         if alien_defeated:
             for aliens in alien_defeated.values():

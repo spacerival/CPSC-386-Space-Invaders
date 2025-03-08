@@ -36,8 +36,8 @@ class Alien(Sprite):
         #type = randint(0, 2)
         self.type = type
         self.timer = Timer(images=Alien.alien_images[self.type], delta=self.type*350, start_index=self.type % 2)
-        self.explosion_timer = Timer(images=Alien.alien_explosion_images, loop_continuously=False, running = False)
-        self.ship_explosion_timer = Timer(images=Alien.ship_explosion_images, loop_continuously=False, running = False)
+        self.explosion_timer = Timer(images=Alien.alien_explosion_images, loop_continuously=False, running=False)
+        self.ship_explosion_timer = Timer(images=Alien.ship_explosion_images, loop_continuously=False, running=False)
         self.image = self.timer.current_image()
         #print(self.image)
         self.rect = self.image.get_rect()
@@ -51,7 +51,7 @@ class Alien(Sprite):
 
     def hit(self):
         if not self.is_dying:
-            print('ALIEN HIT! Alien is dying')
+            #print('ALIEN HIT! Alien is dying')
             self.is_dying = True
             self.timer = self.explosion_timer
             self.timer.start()
@@ -78,11 +78,11 @@ class Alien(Sprite):
         if self.is_dying and self.explosion_timer.finished():
             self.is_dying = False
             self.is_dead = True
-            print('Alien is dead')
+            #print('Alien is dead')
             self.kill()
             return
 
-        self.x += self.v.x 
+        self.x += self.v.x * self.settings.alien_speed
         self.y += self.v.y
         self.image = self.timer.current_image()
         self.draw()

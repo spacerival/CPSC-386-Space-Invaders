@@ -63,7 +63,7 @@ class Fleet(Sprite):
     
     def spawn_ufo(self):
         alien = Alien(self.ai_game, self.v_ufo, 3)
-        x, y = alien.rect.width, alien.rect.height
+        x, y = alien.rect.width, alien.rect.height * 3
         alien.x, alien.rect.x = x, x
         alien.y, alien.rect.y = y, y
         self.ufo.add(alien)
@@ -122,7 +122,7 @@ class Fleet(Sprite):
     def update(self): 
         collisions = pg.sprite.groupcollide(self.ship.lasers, self.aliens, True, False)
 
-        ufo_defeated = pg.sprite.groupcollide(self.ship.lasers, self.ufo, True, True)
+        ufo_defeated = pg.sprite.groupcollide(self.ship.lasers, self.ufo, True, False)
         ship_alien_hit = pg.sprite.spritecollideany(self.ship, self.aliens)
         ship_alien_laser_hit =  pg.sprite.spritecollideany(self.ship, self.lasers)
         ship_ufo_hit = pg.sprite.spritecollideany(self.ship, self.ufo)
@@ -131,15 +131,22 @@ class Fleet(Sprite):
         if collisions:
             for aliens in collisions.values():
                 for alien in aliens:
-                    pts = alien.check_pts()
                     alien.hit()
-                    self.stats.score += pts * len(aliens)
-                    self.settings.alien_speed *= 1.003
+                    if alien.is_dying == True and alien.pts_earned == False:
+                        pts = alien.check_pts()
+                        self.stats.score += pts * len(aliens)
+                        self.settings.alien_speed *= 1.003
+                        alien.pts_earned = True
                 
             self.sb.prep_score()
             self.sb.check_high_score()
         elif ufo_defeated:
-            self.stats.score += Alien.alien3.get("points")
+            for ufo in self.ufo:
+                ufo.hit()
+                if ufo.is_dying == True and ufo.pts_earned == False:
+                        self.stats.score += Alien.alien3.get("points")
+                        self.settings.alien_speed *= 1.003
+                        ufo.pts_earned = True
             self.ufo_on = False
             self.sb.prep_score()
             self.sb.check_high_score()
@@ -156,6 +163,7 @@ class Fleet(Sprite):
         
         if ship_alien_hit or ship_alien_laser_hit or ship_ufo_hit:
             print("Ship hit!")
+            pg.mixer.music.rewind()
             self.settings.alien_speed = self.settings.alien_base_speed
             self.ship.ship_hit()
             self.lasers.empty()

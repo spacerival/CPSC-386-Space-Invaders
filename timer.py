@@ -2,7 +2,7 @@ import pygame
 from time import time
 
 class Timer:
-    def __init__(self, images, start_index=0, loop_continuously=True, delta=1000, running = True):
+    def __init__(self, images, start_index=0, loop_continuously=True, delta=500, running = True):
         if len(images) == 0: raise ValueError("timer's list of images is empty")
         if start_index > len(images) - 1: raise ValueError("start_index out of bounds")
         self.images = images
@@ -13,7 +13,9 @@ class Timer:
         self.running = running
 
 
-    def start(self): self.running = True
+    def start(self): 
+        self.running = True
+        self.latest = pygame.time.get_ticks()
 
     def finished(self): 
         return not self.loop_continuously and self.index == len(self.images) - 1

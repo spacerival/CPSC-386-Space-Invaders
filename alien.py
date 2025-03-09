@@ -8,20 +8,21 @@ from random import randint
 
 class Alien(Sprite):
 
-    """example: "animation/pinkAlien_rd-{n}.png"  """
+    
     alien_images0 = [pg.image.load(f"animation/pinkAlien_rd-{n+1}.png.png") for n in range(2)]
     alien_images1 = [pg.image.load(f"animation/blueAlien_rd-{n+1}.png.png") for n in range(2)]
     alien_images2 = [pg.image.load(f"animation/greenAlien_rd-{n+1}.png.png") for n in range(2)]
     alien_images3 = [pg.image.load(f"animation/alienShip_rd-{n+1}.png.png") for n in range(2)]
     alien_images = [alien_images0, alien_images1, alien_images2, alien_images3]
-    alien_explosion_images = [pg.image.load(f"animation/explosion_rd-{n+1}.png.png") for n in range(3)]  # fill in explosion images here
-    ufo_explosion_images = [pg.image.load(f"animation/explosion_points-{n+1}.png.png") for n in range(3)]
+    alien_explosion_images = [pg.image.load(f"animation/explosion_rd-{n+1}.png.png") for n in range(4)]  # fill in explosion images here
+    ufo_explosion_images = [pg.image.load(f"animation/explosion_points-{n+1}.png.png") for n in range(4)]
 
+    # Dictionaries for each alien type
     alien0 = {"type": "pink", "points": 100, "type_value": 0}
     alien1 = {"type": "blue", "points": 200, "type_value": 1}
     alien2 = {"type": "green", "points": 300, "type_value": 2}
     alien3 = {"type": "ufo", "points": 500, "type_value": 3}
-    alien_types = [alien0, alien1, alien2, alien3]
+    alien_types = [alien0, alien1, alien2, alien3]              # A list of dictionaries holding all alien types
     
 
     def __init__(self, ai_game, v, type=0): 
@@ -35,7 +36,7 @@ class Alien(Sprite):
         self.pts_earned = False
 
         #type = randint(0, 2)
-        self.type = type
+        self.type = type    
         self.timer = Timer(images=Alien.alien_images[self.type], delta=self.type*350, start_index=self.type % 2)
         self.explosion_timer = Timer(images=Alien.alien_explosion_images, loop_continuously=False, running=False)
         self.ufo_explosion_timer = Timer(images=Alien.ufo_explosion_images, loop_continuously=False, running=False)

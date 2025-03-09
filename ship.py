@@ -19,7 +19,6 @@ class Ship(Sprite):
         self.is_dying = False
         self.is_dead = False
 
-        self.ship_explosion_timer = Timer(images=Ship.ship_explosion_images, loop_continuously=False, running=False)
         self.image = pg.image.load("animation/ship_rd-1.png.png")
 
         self.rect = self.image.get_rect()
@@ -39,28 +38,38 @@ class Ship(Sprite):
     def reset_ship(self):
         self.lasers.empty()
         self.center_ship()
+        self.is_dead = False
+        self.is_dying = False
+        self.image = pg.image.load("animation/ship_rd-1.png.png")
 
     def center_ship(self):         
         self.rect.midbottom = self.screen_rect.midbottom
         self.x = float(self.rect.x)
         self.y = float(self.rect.y)
 
+
     def bound(self):
         x, y, scr_r = self.x, self.y, self.screen_rect
         self.x = max(0, min(x, scr_r.width - self.rect.width)) 
         self.y = max(0, min(y, scr_r.height - self.rect.height))
+    
 
     def ship_hit(self):
+        if not self.is_dying:
+            self.is_dying = True
+            self.ship_explosion_timer = Timer(images=Ship.ship_explosion_images, loop_continuously=False, running=False)
+            self.ship_explosion_timer.start()
+
+
+    def ship_down(self):
         self.stats.ships_left -= 1
         print(f"Only {self.stats.ships_left} ships left now")
         self.sb.prep_ships()
+        self.reset_ship()
         if self.stats.ships_left <= 0:
             self.ai_game.game_over()
 
-        self.lasers.empty()
         self.fleet.aliens.empty()
-
-        self.center_ship()
         self.fleet.create_fleet()
 
         sleep(0.5) 
@@ -74,6 +83,13 @@ class Ship(Sprite):
     def cease_fire(self): self.firing = False
 
     def update(self):
+        if self.is_dying:
+            self.image = self.ship_explosion_timer.current_image()
+        if self.is_dying and self.ship_explosion_timer.finished():
+            self.is_dying = False
+            self.is_dead = True
+            return
+        
         self.x += self.v.x 
         self.y += self.v.y
         self.bound()

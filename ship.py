@@ -3,9 +3,12 @@ from vector import Vector
 from point import Point
 from laser import Laser 
 from time import sleep
+from timer import Timer
 from pygame.sprite import Sprite
 
 class Ship(Sprite):
+    ship_explosion_images = [pg.image.load(f"animation/ship_explosion-{n+1}.png.png") for n in range(9)]
+
     def __init__(self, ai_game, v=Vector()):
         super().__init__()
         self.ai_game = ai_game
@@ -13,8 +16,12 @@ class Ship(Sprite):
         self.screen_rect = ai_game.screen.get_rect()
         self.stats = ai_game.stats
         self.sb = None
+        self.is_dying = False
+        self.is_dead = False
 
+        self.ship_explosion_timer = Timer(images=Ship.ship_explosion_images, loop_continuously=False, running=False)
         self.image = pg.image.load("animation/ship_rd-1.png.png")
+
         self.rect = self.image.get_rect()
         self.rect.midbottom = self.screen_rect.midbottom
         scr_r = self.screen_rect 

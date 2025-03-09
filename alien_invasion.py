@@ -81,7 +81,8 @@ class AlienInvasion:
         self.game_active = False
         pg.mixer.music.play(-1, 0)
         while not self.finished:
-            self.finished = self.event.check_events()
+            if self.ship.is_dying == False:     # Locks controls if ship is dying, otherwise proceed
+                self.finished = self.event.check_events()
             if self.first or self.game_active:
                 self.first = False
                 self.screen.fill(self.bg_color)

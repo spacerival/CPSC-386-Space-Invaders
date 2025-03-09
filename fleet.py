@@ -126,7 +126,7 @@ class Fleet(Sprite):
         ship_alien_hit = pg.sprite.spritecollideany(self.ship, self.aliens)
         ship_alien_laser_hit =  pg.sprite.spritecollideany(self.ship, self.lasers)
         ship_ufo_hit = pg.sprite.spritecollideany(self.ship, self.ufo)
-        pg.sprite.groupcollide(self.ship.lasers, self.lasers, True, True)              
+        pg.sprite.groupcollide(self.ship.lasers, self.lasers, True, True)             
 
         # If either an alien or ufo is hit by a ship laser
         if collisions:
@@ -162,10 +162,13 @@ class Fleet(Sprite):
             return
         
         if ship_alien_hit or ship_alien_laser_hit or ship_ufo_hit:  # if the ship gets hit by an alien, ufo, or enemy laser
+            self.ship.ship_hit()
+            
+        if self.ship.is_dead == True:
             print("Ship hit!")
             pg.mixer.music.rewind()
             self.settings.alien_speed = self.settings.alien_base_speed
-            self.ship.ship_hit()
+            self.ship.ship_down()
             self.lasers.empty()
             return
         

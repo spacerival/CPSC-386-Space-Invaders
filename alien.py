@@ -15,7 +15,7 @@ class Alien(Sprite):
     alien_images3 = [pg.image.load(f"animation/alienShip_rd-{n+1}.png.png") for n in range(2)]
     alien_images = [alien_images0, alien_images1, alien_images2, alien_images3]
     alien_explosion_images = [pg.image.load(f"animation/explosion_rd-{n+1}.png.png") for n in range(3)]  # fill in explosion images here
-    ship_explosion_images = [pg.image.load(f"animation/ship_explosion-{n+1}.png.png") for n in range(9)]
+    ufo_explosion_images = [pg.image.load(f"animation/explosion_points-{n+1}.png.png") for n in range(3)]
 
     alien0 = {"type": "pink", "points": 100, "type_value": 0}
     alien1 = {"type": "blue", "points": 200, "type_value": 1}
@@ -32,12 +32,13 @@ class Alien(Sprite):
         self.v = v
         self.is_dying = False
         self.is_dead = False
+        self.pts_earned = False
 
         #type = randint(0, 2)
         self.type = type
         self.timer = Timer(images=Alien.alien_images[self.type], delta=self.type*350, start_index=self.type % 2)
         self.explosion_timer = Timer(images=Alien.alien_explosion_images, loop_continuously=False, running=False)
-        self.ship_explosion_timer = Timer(images=Alien.ship_explosion_images, loop_continuously=False, running=False)
+        self.ufo_explosion_timer = Timer(images=Alien.ufo_explosion_images, loop_continuously=False, running=False)
         self.image = self.timer.current_image()
         #print(self.image)
         self.rect = self.image.get_rect()
@@ -53,7 +54,10 @@ class Alien(Sprite):
         if not self.is_dying:
             #print('ALIEN HIT! Alien is dying')
             self.is_dying = True
-            self.timer = self.explosion_timer
+            if self.type == Alien.alien3.get("type_value"):
+                self.timer = self.ufo_explosion_timer
+            else:
+                self.timer = self.explosion_timer
             self.timer.start()
         
 
@@ -75,7 +79,7 @@ class Alien(Sprite):
 
     def update(self):
         if self.is_dead: return
-        if self.is_dying and self.explosion_timer.finished():
+        if self.is_dying and (self.explosion_timer.finished() or self.ufo_explosion_timer.finished()):
             self.is_dying = False
             self.is_dead = True
             #print('Alien is dead')

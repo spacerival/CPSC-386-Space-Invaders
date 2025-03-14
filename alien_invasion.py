@@ -11,13 +11,10 @@ from scoreboard import Scoreboard
 from event import Event
 from menu import Menu
 from pathlib import Path
+from barrier import Barriers
 
 
 class AlienInvasion:
-    # di = {pg.K_RIGHT: Vector(1, 0), pg.K_LEFT: Vector(-1, 0),
-    #       pg.K_UP: Vector(0, -1), pg.K_DOWN: Vector(0, 1),
-    #       pg.K_d: Vector(1, 0), pg.K_a: Vector(-1, 0),
-    #       pg.K_w: Vector(0, -1), pg.K_s: Vector(0, 1)}
     def __init__(self):
         pg.init()   
         self.path = Path("high_score.txt")
@@ -31,6 +28,7 @@ class AlienInvasion:
         self.fleet = Fleet(ai_game=self)
         self.ship.set_fleet(self.fleet)
         self.ship.set_sb(self.sb)
+        self.barriers = Barriers(ai_game=self)
 
         pg.display.set_caption("Alien Invasion")
         self.bg_color = self.settings.bg_color
@@ -53,7 +51,7 @@ class AlienInvasion:
         print(f"High Score: {self.stats.high_score}\n")     # Testing purposes
         print("Game over!")
         self.game_active = False
-        self.menu_toggle = True
+        self.menu_toggle = True         # Once the game is over, toggle the start menu
         pg.mouse.set_visible(True)
         self.settings.play_menu_theme()
     
@@ -66,6 +64,7 @@ class AlienInvasion:
         self.ship.reset_ship()
         self.fleet.reset_fleet()
         pg.mouse.set_visible(False)
+
 
     def restart_game(self):
         self.game_active = False
@@ -88,19 +87,19 @@ class AlienInvasion:
                 self.screen.fill(self.bg_color)
                 self.ship.update()
                 self.fleet.update()
+                self.barriers.update()
                 self.sb.show_score()
 
             if not self.game_active:
-                if self.menu_toggle == True:
+                if self.menu_toggle == True:        # If menu is toggled, show start menu
                     self.menu.display_start_menu()
                     self.play_button.draw_button()
                     self.high_score_button.draw_button()
-                else:
+                else:                               # If menu isn't toggled, show high score menu
                     self.menu.display_high_scores()
                     self.back_button.draw_button()
                 
             pg.display.flip()
-
             self.clock.tick(60)
         sys.exit()
 

@@ -2,7 +2,6 @@ import pygame as pg
 from vector import Vector
 from point import Point
 from laser import Laser 
-
 from alien import Alien
 from pygame.sprite import Sprite
 from random import randint
@@ -20,13 +19,11 @@ class Fleet(Sprite):
         self.sb = ai_game.sb
         self.v = Vector(self.settings.alien_speed, 0)
         self.v_ufo = Vector(self.settings.alien_speed, 0)
-        # alien = Alien(ai_game=ai_game)
-        # self.aliens.add(alien)
         self.spacing = 1.2
         self.create_fleet()
         self.ufo_on = False
         self.ufo_level = 0
-        # self.create_row()
+    
 
     def reset_fleet(self):
         self.aliens.empty()
@@ -39,6 +36,7 @@ class Fleet(Sprite):
         alien_height = alien.rect.height
         current_y = alien_height + 65
         type = 2
+        # Divides each row by type. Bottom two rows are the same type
         while current_y < (self.settings.scr_height - self.spacing * 6 * alien_height):
             if type == -1:
                 type = 0
@@ -68,8 +66,8 @@ class Fleet(Sprite):
         alien.y, alien.rect.y = y, y
         self.ufo.add(alien)
         print("UFO SPAWNED")
-        self.ufo_on = True
-        self.ufo_level += 1
+        self.ufo_on = True      # Variable to track if UFO spawned
+        self.ufo_level += 1     # Ensures that UFO doesn't spawn multiple times in same level
 
 
     def check_edges(self):
@@ -129,23 +127,24 @@ class Fleet(Sprite):
         pg.sprite.groupcollide(self.ship.lasers, self.lasers, True, True)             
 
         # If either an alien or ufo is hit by a ship laser
-        if collisions:
+        if collisions:      # If an alien is hit, update score according to alien pt. value
             for aliens in collisions.values():
                 for alien in aliens:
                     alien.hit()
-                    if alien.is_dying == True and alien.pts_earned == False:
+                    # Ensures that no duplicate points are given when lasers hits alien explosion animation
+                    if alien.is_dying == True and alien.pts_earned == False:    
                         pts = alien.check_pts()
                         self.stats.score += pts * len(aliens)
-                        self.settings.alien_speed *= 1.003
+                        self.settings.alien_speed *= 1.03       # Increases speed for each defeated alien
                         alien.pts_earned = True
             self.sb.prep_score()
             self.sb.check_high_score()
-        elif ufo_defeated:
+        elif ufo_defeated:  # if UFO is hit, update score by UFO pt. value
             for ufo in self.ufo:
                 ufo.hit()
                 if ufo.is_dying == True and ufo.pts_earned == False:
                         self.stats.score += Alien.alien3.get("points")
-                        self.settings.alien_speed *= 1.003
+                        self.settings.alien_speed *= 1.03
                         ufo.pts_earned = True
             self.ufo_on = False
             self.sb.prep_score()
@@ -162,13 +161,13 @@ class Fleet(Sprite):
             return
         
         if ship_alien_hit or ship_alien_laser_hit or ship_ufo_hit:  # if the ship gets hit by an alien, ufo, or enemy laser
-            self.ship.ship_hit()
+            self.ship.ship_hit()    # Starts ship explosion timer/animation
             
         if self.ship.is_dead == True:
             print("Ship hit!")
             pg.mixer.music.rewind()
             self.settings.alien_speed = self.settings.alien_base_speed
-            self.ship.ship_down()
+            self.ship.ship_down()   # Updates number of ships left and resets ship
             self.lasers.empty()
             return
         
@@ -205,10 +204,8 @@ class Fleet(Sprite):
         self.update_laser()
         
         
-
     def draw(self): pass
-        # for alien in self.aliens:
-        #     alien.draw()
+        
 
 def main():
     print('\n run from alien_invasions.py\n')

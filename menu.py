@@ -14,7 +14,6 @@ class Menu:
     green_alien_img = pg.image.load(f"animation/greenAlien_rd-1.png.png")  # 300 points
     alien_ship_img = pg.image.load(f"animation/alienShip_rd-1.png.png")   # 500 points
 
-    #alien_img = pg.image.load(f"images/alien00.png")        # To be removed later
 
     def __init__(self, ai_game): 
         pg.init()
@@ -55,8 +54,6 @@ class Menu:
         self.green_alien_rect = Menu.green_alien_img.get_rect()
         self.alien_ship_rect = Menu.alien_ship_img.get_rect()
 
-        #self.alien_rect = Menu.alien_img.get_rect()     # To be removed later
-
         self.pink_alien_rect.centerx = self.screen.get_rect().centerx - 100
         self.pink_alien_rect.top = self.screen.get_rect().top + 150
         self.blue_alien_rect.centerx = self.screen.get_rect().centerx - 100
@@ -66,10 +63,7 @@ class Menu:
         self.alien_ship_rect.centerx = self.screen.get_rect().centerx - 100
         self.alien_ship_rect.top = self.screen.get_rect().top + 450
         
-        #self.alien_rect.centerx = self.screen.get_rect().centerx    # To be removed later
-        #self.alien_rect.top = self.screen.get_rect().top + 200      # To be removed later
 
-    
     def prep_alien_scores(self):
         self.pink_pts_rect = self.pink_alien_pts.get_rect()
         self.blue_pts_rect = self.blue_alien_pts.get_rect()
@@ -111,6 +105,7 @@ class Menu:
     
 
     def draw_high_scores(self):
+        """Renders + blits text for each high score in the top 10 high scores list"""
         self.points = self.stats.points
         offset = 150
         for point in self.points:
@@ -132,7 +127,6 @@ class Menu:
         self.screen.blit(Menu.green_alien_img, self.green_alien_rect)
         self.screen.blit(Menu.alien_ship_img, self.alien_ship_rect)
 
-        #self.screen.blit(Menu.alien_img, self.alien_rect)       # To be removed later
 
     def display_alien_pts(self):
         self.screen.blit(self.pink_alien_pts, self.pink_pts_rect)
@@ -142,6 +136,7 @@ class Menu:
 
 
     def display_start_menu(self):
+        """Displays screen title and alien types + their respective point values"""
         self.prep_start_menu()
         self.screen.fill(self.settings.bg_color)
         self.display_alien_imgs()
@@ -150,6 +145,7 @@ class Menu:
 
     
     def display_high_scores(self):
+        """Displays screen title and list of top 10 high scores"""
         self.prep_score_menu()
         self.screen.fill(self.settings.bg_color)
         self.screen.blit(self.text3, self.text3_rect)
@@ -179,4 +175,3 @@ class Menu:
             value += point + "\n"
         print(value)    # Testing Purposes
         self.path.write_text(value)
-
